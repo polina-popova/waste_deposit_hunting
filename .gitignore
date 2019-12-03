@@ -1,0 +1,7 @@
+/.idea/
+/photos/
+settings_local.py
+__pycache__
+.idea
+*.pyc
+*.pyo
