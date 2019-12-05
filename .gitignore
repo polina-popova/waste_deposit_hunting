@@ -1,5 +1,6 @@
 /.idea/
 /photos/
+db.sqlite3
 settings_local.py
 __pycache__
 .idea
