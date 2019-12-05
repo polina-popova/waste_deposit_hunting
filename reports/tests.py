@@ -14,7 +14,8 @@ class ReportTestCase(APITestCase):
 
         with open(tmp_file.name, 'rb') as photo:
             data = {
-                "location": "Point (12.492324113849 41.890307434153)",
+                'lat': '12.492324113849',
+                'lon': '41.890307434153',
                 'photo': photo
             }
             response = self.client.post(
