@@ -26,6 +26,27 @@ feedback_info=some_text_string
 Success Response:
 
 * Code: 201
+* Content: 
+
+```json
+{
+  "datetime_received": "2019-12-06T19:26:47.796141+03:00",
+  "photo": "http://0.0.0.0:8000/api/v1/reports/photos/2019/12/06/test_photo.jpg",
+  "lat": 12.12334,
+  "lon": 12.12334,
+  "comment": "some_text_string",
+  "feedback_info": "some_text_string",
+  "waste_deposit": 1
+}
+```
+
+Error Responses:
+
+* Code: 400
+
+* Content: {"photo":["Не был загружен файл."]} or {"lat":["Это поле обязательно."]}
+* How to solve: provide missing required argument.
+
 
 Sample Call:
 
