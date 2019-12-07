@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('lat', models.FloatField(verbose_name='Широта')),
-                ('lon', models.FloatField(verbose_name='Долгота')),
+                ('long', models.FloatField(verbose_name='Долгота')),
                 ('status', models.CharField(choices=[('new', '1')], default='1', max_length=100, verbose_name='Статус')),
             ],
             options={
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('datetime_received', models.DateTimeField(auto_now=True, verbose_name='Дата получения отчета')),
                 ('photo', models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото')),
                 ('lat', models.FloatField(verbose_name='Широта')),
-                ('lon', models.FloatField(verbose_name='Долгота')),
+                ('long', models.FloatField(verbose_name='Долгота')),
                 ('comment', models.TextField(blank=True, null=True, verbose_name='Комментарий')),
                 ('feedback_info', models.TextField(blank=True, null=True, verbose_name='Обратная связь')),
                 ('waste_deposit', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reports', to='reports.WasteDeposit', verbose_name='Свалка')),

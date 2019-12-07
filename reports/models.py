@@ -10,7 +10,7 @@ class WasteDeposit(models.Model):
     """Model of the waste deposit object """
 
     lat = models.FloatField(verbose_name='Широта')
-    lon = models.FloatField(verbose_name='Долгота')
+    long = models.FloatField(verbose_name='Долгота')
     status = models.CharField(
         choices=WASTE_DEPOSIT_STATUSES, max_length=100, default='1',
         verbose_name='Статус'
@@ -31,7 +31,7 @@ class Report(models.Model):
 
     photo = models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото')
     lat = models.FloatField(verbose_name='Широта')
-    lon = models.FloatField(verbose_name='Долгота')
+    long = models.FloatField(verbose_name='Долгота')
     comment = models.TextField(blank=True, null=True, verbose_name='Комментарий')
     feedback_info = models.TextField(blank=True, null=True, verbose_name='Обратная связь')
 
