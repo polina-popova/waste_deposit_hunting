@@ -122,3 +122,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Django REST Framework
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'reports.exception_handlers.custom_exception_handler',
+}
+
+
+# Errors
+
+INVALID_STATE_ERROR = ''
+
+NO_PHOTO_ERROR = ''
+
+NO_LONG_ERROR = ''
+
+NO_LAT_ERROR = ''
+
+INVALID_LAT_ERROR = ''
+
+INVALID_LONG_ERROR = ''
+
+try:
+    from waste_deposit_hunting.settings_local import *
+except ImportError:
+    pass

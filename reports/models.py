@@ -29,9 +29,9 @@ class Report(models.Model):
         auto_now=True, verbose_name='Дата получения отчета'
     )
 
-    photo = models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото')
-    lat = models.FloatField(verbose_name='Широта')
-    long = models.FloatField(verbose_name='Долгота')
+    photo = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True, verbose_name='Фото')
+    lat = models.FloatField(blank=True, verbose_name='Широта')
+    long = models.FloatField(blank=True, verbose_name='Долгота')
     comment = models.TextField(blank=True, null=True, verbose_name='Комментарий')
     feedback_info = models.TextField(blank=True, null=True, verbose_name='Обратная связь')
 

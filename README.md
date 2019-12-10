@@ -14,7 +14,8 @@ waste deposits in Arkhangelsk's area.
 |`/reports/`  | `POST` | not required  |
 
 
-Param: data, where `comment` and `feedback_info` are not required.
+Param: data, where `comment` and `feedback_info` are not required and `lat` and `long` must be in WGS84 
+format and belong to the Arkhangelsk's area.
 ```
 lat=12.12334
 long=12.12334
@@ -44,8 +45,41 @@ Error Responses:
 
 * Code: 400
 
-* Content: {"photo":["Не был загружен файл."]} or {"lat":["Это поле обязательно."]}
+* Content:
+```json
+{
+  "code": "no_photo",
+  "msg" : "Фотография является обязательной."
+}
+```
+* Possible codes: "no_photo" for missing photo argument, "no_long" for longitude, "no_lat" for latitude.
 * How to solve: provide missing required argument.
+
+---
+* Code: 400
+
+* Content:
+```json
+{
+  "code": "invalid_lat",
+  "msg" : "Невалидная широта."
+}
+```
+* Possible codes: "invalid_long" for invalid longitude, "invalid_lat" for latitude.
+* How to solve: provide valid argument.
+---
+
+* Code: 400
+
+* Content: 
+```json
+{
+  "code": "invalid_geo_state",
+  "msg" : "На данным момент приложение работает только на територии Архангельской области. Пожалуйста, измените выбор местоположения."
+}
+```
+
+* How to solve: provide latitude and longitude belonged to the Arkhangelsk's area.
 
 
 Sample Call:
