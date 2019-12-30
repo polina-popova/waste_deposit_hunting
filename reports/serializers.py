@@ -22,7 +22,7 @@ class CustomValidationError(Exception):
             self.code = code
 
 
-class ReportSerializer(serializers.ModelSerializer):
+class CreateReportSerializer(serializers.ModelSerializer):
     waste_deposit = serializers.PrimaryKeyRelatedField(
         source='waste_deposit.id', read_only=True
     )
@@ -84,3 +84,10 @@ class ReportSerializer(serializers.ModelSerializer):
         validated_data['waste_deposit'] = waste_deposit
 
         return super().create(validated_data)
+
+
+class ListReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+
+        fields = ('datetime_received', 'photo', 'lat', 'long')

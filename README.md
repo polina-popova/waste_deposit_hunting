@@ -87,3 +87,37 @@ Sample Call:
 ```bash
 curl -X POST -H "Content-Type:multipart/form-data" -F "long=12.12334" -F "lat=12.12334" -F "photo=@test_photo.jpg" http://0.0.0.0:8000/api/v1/reports/
 ```
+
+### Interface to list all reports
+
+| URI         | Method | Authorization |
+|-------------|--------|---------------|
+|`/reports/`  | `GET`  | not required  |
+
+Success Response:
+
+* Code: 200
+* Content: 
+
+```json
+{
+    "count": 2,
+    "next": "http://0.0.0.0:8000/api/v1/reports/?page=2",
+    "previous": null,
+    "results": [
+        {
+            "datetime_received": "2019-12-30T13:18:39.566743+03:00",
+            "photo": "http://0.0.0.0:8000/api/v1/reports/photos/2019/12/06/test_photo.jpg",
+            "lat": 64.61833411,
+            "long": 40.9587337
+        }
+    ]
+}
+```
+Page limit is 10 reports per page.
+
+Sample Call to get 11th-20th reports:
+
+```bash
+curl http://0.0.0.0:8000/api/v1/reports/?page=2
+```

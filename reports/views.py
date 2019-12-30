@@ -1,12 +1,11 @@
 from rest_framework import viewsets
 
 from .models import Report
-from .serializers import ReportSerializer
+from .serializers import CreateReportSerializer, ListReportSerializer
 
 
 class ReportViewSet(viewsets.ModelViewSet):
-    serializer_class = ReportSerializer
     queryset = Report.objects.all()
 
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    def get_serializer_class(self):
+        return CreateReportSerializer if self.request.method == 'POST' else ListReportSerializer
