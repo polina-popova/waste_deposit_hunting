@@ -121,3 +121,10 @@ Sample Call to get 11th-20th reports:
 ```bash
 curl http://0.0.0.0:8000/api/v1/reports/?page=2
 ```
+
+Also there is a possibility to get whole reports list via 'all=true' query parameter.
+Sample Call to get all reports:
+
+```bash
+curl http://0.0.0.0:8000/api/v1/reports/?all=true
+```
