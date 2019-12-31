@@ -10,3 +10,9 @@ NO_LAT_ERROR = 'Долгота является обязательной.'
 INVALID_LAT_ERROR = 'Невалидная долгота.'
 
 INVALID_LONG_ERROR = 'Невалидная широта.'
+
+EMAIL_HOST_PASSWORD = ''
+
+EMAIL_RECEIVER = []
+
+EMAIL_TITLE = 'Охота на свалку'

@@ -120,6 +120,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATIC_URL = '/static/'
 
@@ -149,6 +150,25 @@ NO_LAT_ERROR = ''
 INVALID_LAT_ERROR = ''
 
 INVALID_LONG_ERROR = ''
+
+# E-mail
+EMAIL_HOST = 'smtp.gmail.com'
+
+EMAIL_PORT = 587
+
+EMAIL_HOST_USER = 'wastedeposithunting@gmail.com'
+
+EMAIL_HOST_PASSWORD = ''
+
+EMAIL_USE_TLS = True
+
+SERVER_EMAIL = EMAIL_HOST_USER
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+EMAIL_RECEIVERS = []
+
+EMAIL_TITLE = ''
 
 try:
     from waste_deposit_hunting.settings_local import *
