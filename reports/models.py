@@ -1,3 +1,5 @@
+import os
+
 from io import BytesIO
 
 from PIL import Image
@@ -46,6 +48,12 @@ class Report(models.Model):
         WasteDeposit, on_delete=models.CASCADE, related_name='reports',
         verbose_name='Свалка'
     )
+
+    was_sent = models.BooleanField(default=False)
+
+    @property
+    def image_filename(self):
+        return os.path.basename(self.photo.name)
 
     def save(self, *args, **kwargs):
         if self.pk is None:  # Resize photo on first save
