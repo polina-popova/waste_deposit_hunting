@@ -1,4 +1,11 @@
+from io import BytesIO
+
+from PIL import Image
 from django.db import models
+from django.core.files.base import ContentFile
+from django.conf import settings
+
+from reports.helpers import get_desired_width
 
 
 WASTE_DEPOSIT_STATUSES = (
@@ -39,6 +46,32 @@ class Report(models.Model):
         WasteDeposit, on_delete=models.CASCADE, related_name='reports',
         verbose_name='Свалка'
     )
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:  # Resize photo on first save
+            opened_photo = Image.open(self.photo)
+
+            if opened_photo.height > settings.PHOTO_MAX_HEIGHT:
+                desired_width = get_desired_width(settings.PHOTO_MAX_HEIGHT, opened_photo)
+                resized_photo = opened_photo.resize((round(desired_width), settings.PHOTO_MAX_HEIGHT), Image.ANTIALIAS)
+
+                new_image_io = BytesIO()
+
+                if opened_photo.format == 'JPEG':
+                    resized_photo.save(new_image_io, format='JPEG')
+                elif opened_photo.format == 'PNG':
+                    resized_photo.save(new_image_io, format='PNG')
+
+                temp_name = self.photo.name
+                self.photo.delete(save=False)
+
+                self.photo.save(
+                    temp_name,
+                    content=ContentFile(new_image_io.getvalue()),
+                    save=False
+                )
+
+        return super(Report, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Отчет'
