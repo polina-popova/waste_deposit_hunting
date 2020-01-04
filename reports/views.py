@@ -7,6 +7,7 @@ from .serializers import CreateReportSerializer, ListReportSerializer
 
 class ReportViewSet(viewsets.ModelViewSet):
     queryset = Report.objects.all()
+    http_method_names = ['post', 'get']
 
     def get_serializer_class(self):
         return CreateReportSerializer if self.request.method == 'POST' else ListReportSerializer
