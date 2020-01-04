@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import serializers, status
 
 from .models import Report, WasteDeposit
-from .utils import get_state
+from .utils import get_location_attrs
 
 
 class CustomValidationError(Exception):
@@ -70,11 +70,13 @@ class CreateReportSerializer(serializers.ModelSerializer):
         self.validate_longitude(attrs.get('long'))
         self.validate_income_photo(attrs.get('photo'))
 
-        state = get_state(attrs['lat'], attrs['long'])
+        state, verbose_address = get_location_attrs(attrs['lat'], attrs['long'])
         if state != 'Архангельская область':
             raise CustomValidationError(
                 detail=settings.INVALID_STATE_ERROR, code='invalid_geo_state'
             )
+        attrs['verbose_address'] = verbose_address
+
         return attrs
 
     def create(self, validated_data):

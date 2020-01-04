@@ -25,6 +25,9 @@ class WasteDeposit(models.Model):
         verbose_name='Статус'
     )
 
+    def __str__(self):
+        return f'Свалка {self.pk}'
+
     class Meta:
         verbose_name = 'Свалка'
         verbose_name_plural = 'Свалки'
@@ -49,7 +52,8 @@ class Report(models.Model):
         verbose_name='Свалка'
     )
 
-    was_sent = models.BooleanField(default=False)
+    was_sent = models.BooleanField(default=False, verbose_name='Включено в ежедневный отчет')
+    verbose_address = models.TextField(blank=True, null=True, verbose_name='Адрес')
 
     @property
     def image_filename(self):
@@ -81,7 +85,10 @@ class Report(models.Model):
 
         return super(Report, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return self.verbose_address or f'{self.lat}, {self.long}'
+
     class Meta:
-        verbose_name = 'Отчет'
-        verbose_name_plural = 'Отчеты'
+        verbose_name = 'Сообщение о свалке'
+        verbose_name_plural = 'Сообщения о свалках'
         ordering = ('-pk', )
