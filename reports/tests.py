@@ -13,6 +13,7 @@ from reports.models import Report
 Coordinates = namedtuple('Coordinates', ('lat', 'long'))
 VALID_COORDINATES = Coordinates(64.61833411, 40.9587337)  # Coordinates of the point in Arkhangelsk area
 INVALID_COORDINATES = Coordinates(61.932308, 37.5152280)  # Coordinates of the point out of Arkhangelsk area
+COORDINATES_WITH_ADDRESS = Coordinates(64.58200895, 40.51487245)
 
 PhotoSize = namedtuple('PhotoSize', ('width', 'height'))
 BIG_SIZE = PhotoSize(9000, 6000)
@@ -63,3 +64,24 @@ class ReportTestCase(APITestCase):
             )
 
         self.assertEqual(response.status_code, 400)
+
+    def test_report_with_address(self):
+        tmp_file = _get_stub_photo(size=DEFAULT_TEST_SIZE)
+
+        with open(tmp_file.name, 'rb') as photo:
+            data = {
+                'lat': COORDINATES_WITH_ADDRESS.lat,
+                'long': COORDINATES_WITH_ADDRESS.long,
+                'photo': photo
+            }
+            response = self.client.post(
+                reverse('reports-list'), data=data
+            )
+
+        report = Report.objects\
+            .filter(lat=COORDINATES_WITH_ADDRESS.lat, long=COORDINATES_WITH_ADDRESS.long)\
+            .first()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(report.verbose_address)
+        print(report.verbose_address)
