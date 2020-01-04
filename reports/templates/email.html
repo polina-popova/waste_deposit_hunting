@@ -782,8 +782,8 @@ img {
         <p><img src="cid:{{ report.image_filename }}" alt="A waste deposit photo"></p>
 
         </td><td class="expander"></td></tr></tbody></table></td><td class="wrapper last"><table class="six columns"><tbody><tr><td>
-
-            <p><strong>GPS:</strong> {{ report.lat }}, {{ report.long }}</p>
+            <p>Сообщение получено<br>{{ report.datetime_received }}</p>
+            <p><strong>GPS:</strong><br>{{ report.lat }}, {{ report.long }}</p>
             {% if report.comment %}
                 <p><strong>Комментарий:</strong> {{ report.comment }}</p>
             {% endif %}
