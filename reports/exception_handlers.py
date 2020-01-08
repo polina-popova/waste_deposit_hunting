@@ -32,7 +32,11 @@ def custom_exception_handler(exc, context):
         if isinstance(exc.detail, (list, dict)):
             data = exc.detail
         else:
-            data = {'msg': exc.detail, 'code': exc.code}
+            try:
+                code = exc.code
+            except AttributeError:
+                code = exc.default_code
+            data = {'msg': exc.detail, 'code': code}
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)
