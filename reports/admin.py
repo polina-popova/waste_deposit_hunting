@@ -1,6 +1,6 @@
 from django.contrib import admin, auth
 
-from .models import Report, WasteDeposit
+from .models import Report, WasteDeposit, ContentComplain
 
 
 @admin.register(Report)
@@ -27,6 +27,9 @@ class WasteDepositAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+
+admin.site.register(ContentComplain)
 
 
 admin.site.unregister(auth.models.Group)
