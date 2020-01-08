@@ -106,6 +106,7 @@ Success Response:
     "previous": null,
     "results": [
         {
+            "id": 1,
             "datetime_received": "2019-12-30T13:18:39.566743+03:00",
             "photo": "http://0.0.0.0:8000/api/v1/reports/photos/2019/12/06/test_photo.jpg",
             "lat": 64.61833411,
@@ -128,3 +129,55 @@ Sample Call to get all reports:
 ```bash
 curl http://0.0.0.0:8000/api/v1/reports/?all=true
 ```
+
+### Interface to post the report content complain
+
+| URI                                      | Method | Authorization |
+|------------------------------------------|--------|---------------|
+|`/reports/{report_id}/content-complain/`  | `POST` | not required  |
+
+Param:
+```json
+{
+"body": "some complain text"  // is required param
+}
+```
+
+Success Response:
+
+* Code: 201
+* Content: 
+
+```json
+{
+"report": 1, 
+"body": "some complain text"
+}
+```
+
+Error Responses:
+
+* Code: 404
+
+* Content:
+```json
+{
+  "code": "no_found",
+  "msg" : "Не найдено."
+}
+```
+----
+
+* How to solve: provide id of the existing report.
+
+* Code: 400
+
+* Content:
+```json
+{
+  "code": "no_body",
+  "msg" : "Добавьте текст жалобы."
+}
+```
+
+* How to solve: provide no-empty `body` parameter.

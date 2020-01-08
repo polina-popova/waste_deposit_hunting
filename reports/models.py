@@ -92,3 +92,14 @@ class Report(models.Model):
         verbose_name = 'Сообщение о свалке'
         verbose_name_plural = 'Сообщения о свалках'
         ordering = ('-pk', )
+
+
+class ContentComplain(models.Model):
+    report = models.ForeignKey(Report, on_delete=models.CASCADE, verbose_name='Сообщение о свалке')
+    body = models.TextField(blank=True)
+    datetime_received = models.DateTimeField(
+        auto_now=True, verbose_name='Дата получения жалобы на контент'
+    )
+
+    def __str__(self):
+        return f'Жалоба на сообщение {self.report_id}'

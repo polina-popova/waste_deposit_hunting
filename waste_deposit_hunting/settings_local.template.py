@@ -11,6 +11,8 @@ INVALID_LAT_ERROR = 'Невалидная долгота.'
 
 INVALID_LONG_ERROR = 'Невалидная широта.'
 
+NO_COMPLAIN_BODY_ERROR = 'Добавьте текст жалобы.'
+
 EMAIL_HOST_PASSWORD = ''
 
 EMAIL_RECEIVER = []

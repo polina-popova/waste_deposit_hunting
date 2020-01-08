@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers, status
 
-from .models import Report, WasteDeposit
+from .models import Report, WasteDeposit, ContentComplain
 from .utils import get_location_attrs
 
 
@@ -92,4 +92,22 @@ class ListReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
 
-        fields = ('datetime_received', 'photo', 'lat', 'long')
+        fields = ('datetime_received', 'photo', 'lat', 'long', 'id')
+
+
+class ContentComplainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContentComplain
+
+        fields = ('report', 'body')
+
+    def validate_body(self, body):
+        if not body:
+            raise CustomValidationError(
+                detail=settings.NO_COMPLAIN_BODY_ERROR, code='no_body'
+            )
+        return body
+
+    def validate(self, attrs):
+        self.validate_body(attrs.get('body'))
+        return attrs

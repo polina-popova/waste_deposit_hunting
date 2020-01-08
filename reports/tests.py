@@ -1,5 +1,6 @@
 import tempfile
 from collections import namedtuple
+from unittest import mock
 
 from PIL import Image
 from django.conf import settings
@@ -19,6 +20,9 @@ PhotoSize = namedtuple('PhotoSize', ('width', 'height'))
 BIG_SIZE = PhotoSize(9000, 6000)
 DEFAULT_TEST_SIZE = PhotoSize(100, 100)
 
+return_valid_state = mock.Mock(return_value=('Архангельская область', 'some address'))
+return_invalid_state = mock.Mock(return_value=('Ленинградская область', 'some address'))
+
 
 def _get_stub_photo(size):
     image = Image.new('RGB', size)
@@ -29,7 +33,7 @@ def _get_stub_photo(size):
 
 
 class ReportTestCase(APITestCase):
-
+    @mock.patch('reports.utils.get_state', return_valid_state)
     def test_post_report(self):
         tmp_file = _get_stub_photo(size=BIG_SIZE)
 
@@ -50,6 +54,7 @@ class ReportTestCase(APITestCase):
         self.assertEqual(report.photo.height, settings.PHOTO_MAX_HEIGHT)
         self.assertEqual(report.photo.width, resized_width)
 
+    @mock.patch('reports.utils.get_state', return_invalid_state)
     def test_report_with_invalid_location(self):
         tmp_file = _get_stub_photo(size=DEFAULT_TEST_SIZE)
 
@@ -85,3 +90,51 @@ class ReportTestCase(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(report.verbose_address)
         print(report.verbose_address)
+
+
+class ContentComplainTestCase(APITestCase):
+    @mock.patch('reports.utils.get_state', return_valid_state)
+    def test_create_content_complain(self):
+        tmp_file = _get_stub_photo(size=DEFAULT_TEST_SIZE)
+
+        with open(tmp_file.name, 'rb') as photo:
+            data = {
+                'lat': VALID_COORDINATES.lat,
+                'long': VALID_COORDINATES.long,
+                'photo': photo
+            }
+
+            response = self.client.post(reverse('reports-list'), data=data)
+        self.assertEqual(response.status_code, 201)
+
+        to_be_complained_report_id = \
+            Report.objects\
+                .filter(lat=VALID_COORDINATES.lat, long=VALID_COORDINATES.long)\
+                .first().id
+
+        data = {'body': 'some complain text'}
+
+        response = self.client.post(
+            reverse(
+                'complains-list',
+                kwargs={'report_pk': to_be_complained_report_id}
+                ),
+            data=data
+        )
+        print(response.json())
+        self.assertEqual(response.status_code, 201)
+
+    @mock.patch('reports.utils.get_state', return_valid_state)
+    def test_create_complain_to_unexisting_report(self):
+        to_be_complained_unexisting_report_id = 100
+
+        data = {'body': 'some complain text'}
+
+        response = self.client.post(
+            reverse(
+                'complains-list',
+                kwargs={'report_pk': to_be_complained_unexisting_report_id}
+            ),
+            data=data
+        )
+        self.assertEqual(response.status_code, 404)
