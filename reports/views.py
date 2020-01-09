@@ -17,6 +17,6 @@ class ReportViewSet(viewsets.ModelViewSet):
         if request.query_params.get('all') == 'true':
             queryset = self.filter_queryset(self.get_queryset())
             serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
+            return Response(data={'results': serializer.data})
 
         return super().list(request, *args, **kwargs)
