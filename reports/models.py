@@ -103,3 +103,8 @@ class ContentComplain(models.Model):
 
     def __str__(self):
         return f'Жалоба на сообщение {self.report_id}'
+
+    class Meta:
+        verbose_name = 'Жалоба на контент'
+        verbose_name_plural = 'Жалобы на контент'
+        ordering = ('-datetime_received', )
