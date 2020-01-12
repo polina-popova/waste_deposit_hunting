@@ -85,6 +85,14 @@ class Report(models.Model):
 
         return super(Report, self).save(*args, **kwargs)
 
+    def delete(self, **kwargs):
+        path = self.photo.path
+        deletion_info = super().delete(**kwargs)
+
+        os.remove(path)
+
+        return deletion_info
+
     def __str__(self):
         return self.verbose_address or f'{self.lat}, {self.long}'
 
