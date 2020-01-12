@@ -13,9 +13,12 @@ from reports.models import Report
 
 
 def send_daily_report():
-    reports = Report.objects.exclude(was_sent=True)
+    unsent_reports = Report.objects.exclude(was_sent=True)
+    to_be_sent_reports = [
+        report for report in unsent_reports if os.path.isfile(report.photo.path)
+    ]
 
-    context = {'reports': reports}
+    context = {'reports': to_be_sent_reports}
     html_content = render_to_string('email.html', context=context).strip()
 
     subject = settings.EMAIL_TITLE
@@ -27,15 +30,20 @@ def send_daily_report():
     msg.mixed_subtype = 'related'
     msg.attach_alternative(html_content, "text/html")
 
-    for report in reports:
+    for to_be_sent_report in to_be_sent_reports:
         # Create an inline attachment
-        image = MIMEImage(report.photo.read())
-        image.add_header('Content-ID', '<{}>'.format(report.image_filename))
+        try:
+            image = MIMEImage(to_be_sent_report.photo.read())
+        except FileNotFoundError:
+            continue
+        image.add_header('Content-ID', '<{}>'.format(to_be_sent_report.image_filename))
         msg.attach(image)
 
     msg.send()
 
-    reports.update(was_sent=True)
+    unsent_reports\
+        .filter(pk__in=tuple(map(lambda x: x.pk, to_be_sent_reports)))\
+        .update(was_sent=True)
 
 
 if __name__ == '__main__':
