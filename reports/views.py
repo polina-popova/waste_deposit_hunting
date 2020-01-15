@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
 
@@ -21,6 +22,11 @@ class ReportViewSet(viewsets.ModelViewSet):
             return Response(data={'results': serializer.data})
 
         return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        settings.LOGGER.info(f'{self.kwargs}\n{self.request.data}')
+
+        return super().create(request, *args, **kwargs)
 
 
 class ContentComplainViewSet(viewsets.GenericViewSet):

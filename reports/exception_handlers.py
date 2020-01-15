@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 
@@ -18,6 +19,7 @@ def custom_exception_handler(exc, context):
 
     if isinstance(exc, CustomValidationError):
         data = {'msg': exc.detail, 'code': exc.code}
+        settings.LOGGER.info(f'ERROR: CustomValidationError: {data}')
 
         set_rollback()
         return Response(data, status=exc.status_code)
@@ -39,6 +41,8 @@ def custom_exception_handler(exc, context):
             data = {'msg': exc.detail, 'code': code}
 
         set_rollback()
+        settings.LOGGER.info(f'ERROR: some {exc.status_code} error: {data}')
+
         return Response(data, status=exc.status_code, headers=headers)
 
     return None

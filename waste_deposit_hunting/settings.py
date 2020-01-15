@@ -170,6 +170,25 @@ EMAIL_RECEIVERS = []
 
 EMAIL_TITLE = ''
 
+# Log configs
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'main': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        }
+    },
+}
+
+
 try:
     from waste_deposit_hunting.settings_local import *
 except ImportError:
