@@ -72,6 +72,8 @@ class CreateReportSerializer(serializers.ModelSerializer):
 
         state, verbose_address = get_location_attrs(attrs['lat'], attrs['long'])
         if state != 'Архангельская область':
+            settings.LOGGER.info(f'ERROR: invalid_geo_state {state}')
+
             raise CustomValidationError(
                 detail=settings.INVALID_STATE_ERROR, code='invalid_geo_state'
             )

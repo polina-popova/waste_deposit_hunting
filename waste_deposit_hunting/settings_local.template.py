@@ -1,3 +1,6 @@
+import logging
+
+
 INVALID_STATE_ERROR = 'На данным момент приложение работает только на територии ' \
                       'Архангельской области. Пожалуйста, измените выбор местоположения.'
 
@@ -22,3 +25,5 @@ EMAIL_TITLE = 'Охота на свалку'
 PHOTO_MAX_HEIGHT = 1750
 
 SECRET_KEY = ''
+
+LOGGER = logging.getLogger('main')
