@@ -23,5 +23,8 @@ env:
 install:
   - pip install -qr requirements.txt
 
+before_script:
+  - mkdir $TRAVIS_BUILD_DIR/media/
+
 script:
   - ./manage.py test ./tests

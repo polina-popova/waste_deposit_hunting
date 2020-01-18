@@ -12,23 +12,38 @@ from .models import Report, WasteDeposit, ContentComplain, State
 class ReportAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'datetime_received', 'was_sent', 'photo', 'waste_deposit')
     readonly_fields = (
-        'was_sent', 'datetime_received', 'photo', 'comment', 'feedback_info',
-        'lat', 'long', 'verbose_address'
+        'waste_deposit', 'state', 'was_sent', 'datetime_received', 'photo',
+        'comment', 'feedback_info', 'lat', 'long', 'verbose_address'
     )
 
-    list_filter = ('datetime_received', 'waste_deposit')
+    list_filter = ('datetime_received',)
     # list_editable = ('waste_deposit', )
 
     def has_add_permission(self, request):
         return False
 
 
+class ReportInline(admin.StackedInline):
+    model = Report
+
+    readonly_fields = (
+        'datetime_received', 'comment', 'feedback_info', 'photo', 'was_sent',
+    )
+    exclude = ('lat', 'long', 'verbose_address')
+    can_delete = False
+
+    def has_add_permission(self, request, obj):
+        return False
+
+
 @admin.register(WasteDeposit)
 class WasteDepositAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'lat', 'long')
-    readonly_fields = ('lat', 'long')
-    exclude = ('status', )
-    list_display_links = None
+    list_display = ('__str__', 'reports_amount', 'datetime_last_received', 'state')
+    exclude = ('status', 'lat', 'long')
+
+    inlines = [
+        ReportInline,
+    ]
 
     def has_add_permission(self, request):
         return False
