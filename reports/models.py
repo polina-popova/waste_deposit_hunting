@@ -25,13 +25,34 @@ class WasteDeposit(models.Model):
         verbose_name='Статус'
     )
 
+    @property
+    def location(self):
+        return self.lat, self.long
+
+    @property
+    def reports_amount(self):
+        return self.reports.count()
+
+    @property
+    def datetime_last_received(self):
+        return self.reports.order_by('-datetime_received').first().datetime_received
+
+    @property
+    def datetime_penult_received(self):
+        if self.reports_amount > 1:
+            return self.reports.order_by('-datetime_received')[1].datetime_received
+
+    @property
+    def state(self):
+        return self.reports.first().state
+
     def __str__(self):
-        return f'Свалка {self.pk}'
+        return f'Свалка №{self.pk}'
 
     class Meta:
         verbose_name = 'Свалка'
         verbose_name_plural = 'Свалки'
-        ordering = ('pk', )
+        ordering = ('-pk', )
 
 
 class State(models.Model):
@@ -41,6 +62,9 @@ class State(models.Model):
         verbose_name='Адреса почт координаторов'
     )
     is_draft = models.BooleanField(default=True, verbose_name='Черновик')
+
+    def __str__(self):
+        return self.state_name
 
     class Meta:
         verbose_name = 'Подключенная область'
@@ -62,8 +86,8 @@ class Report(models.Model):
     feedback_info = models.TextField(blank=True, null=True, verbose_name='Обратная связь')
 
     waste_deposit = models.ForeignKey(
-        WasteDeposit, on_delete=models.CASCADE, related_name='reports',
-        verbose_name='Свалка'
+        WasteDeposit, on_delete=models.SET_NULL, blank=True, null=True,
+        related_name='reports', verbose_name='Свалка'
     )
 
     was_sent = models.BooleanField(default=False, verbose_name='Включено в ежедневный отчет')
@@ -77,6 +101,10 @@ class Report(models.Model):
     @property
     def image_filename(self):
         return os.path.basename(self.photo.name)
+
+    @property
+    def location(self):
+        return self.lat, self.long
 
     def save(self, *args, **kwargs):
         if self.pk is None:  # Resize photo on first save

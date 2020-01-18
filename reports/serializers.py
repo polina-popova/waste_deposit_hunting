@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers, status
 
-from .models import Report, WasteDeposit, ContentComplain, State
+from .models import Report, ContentComplain, State
 from .utils import get_location_attrs
 
 
@@ -88,12 +88,9 @@ class CreateReportSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        waste_deposit = WasteDeposit.objects.create(
-            lat=validated_data['lat'], long=validated_data['long']
-        )
-        validated_data['waste_deposit'] = waste_deposit
+        report = super().create(validated_data)
 
-        return super().create(validated_data)
+        return report
 
 
 class ListReportSerializer(serializers.ModelSerializer):

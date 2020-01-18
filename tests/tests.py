@@ -4,12 +4,12 @@ from unittest import mock
 
 from PIL import Image
 from django.conf import settings
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from reports.helpers import get_desired_width
-from reports.models import Report, State
+from reports.models import Report, State, WasteDeposit
+from reports.logic import attach_to_waste_deposit
 from send_daily_report import send_daily_report
 from tests.data_factory import ValidReportFactory
 
@@ -17,6 +17,8 @@ Coordinates = namedtuple('Coordinates', ('lat', 'long'))
 VALID_COORDINATES = Coordinates(64.61833411, 40.9587337)  # Coordinates of the point in Arkhangelsk area
 INVALID_COORDINATES = Coordinates(61.932308, 37.5152280)  # Coordinates of the point out of Arkhangelsk area
 COORDINATES_WITH_ADDRESS = Coordinates(64.58200895, 40.51487245)
+IN_FIVE_METERS_COORDINATES = Coordinates(64.582013, 40.514944)  # Coordinates in less then 5 meters from COORDINATES_WITH_ADDRESS
+MORE_THEN_IN_FIVE_METERS_COORDINATES = Coordinates(64.582156, 40.516663)  # Coordinates in more then 5 meters from COORDINATES_WITH_ADDRESS
 
 PhotoSize = namedtuple('PhotoSize', ('width', 'height'))
 BIG_SIZE = PhotoSize(9000, 6000)
@@ -166,3 +168,45 @@ class SentDailyReportTestCase(BaseTestCase):
 
         self.assertEqual(args[0].call_count, 5)
         self.assertFalse(unsent_reports)
+
+
+class AttachReportTestCase(BaseTestCase):
+    PHOTO_PATH = settings.MEDIA_ROOT + '/test.png'
+
+    def setUp(self):
+        WasteDeposit.objects.create(
+            lat=COORDINATES_WITH_ADDRESS.lat, long=COORDINATES_WITH_ADDRESS.long
+        )
+
+        photo = Image.new('RGB', DEFAULT_TEST_SIZE)
+        photo.save(format='png', fp=self.PHOTO_PATH)
+
+    def test_attach_report_to_existed_waste_deposit(self):
+        report = Report.objects.create(
+            photo=self.PHOTO_PATH, lat=IN_FIVE_METERS_COORDINATES.lat,
+            long=IN_FIVE_METERS_COORDINATES.long
+        )
+
+        attach_to_waste_deposit(report)
+
+        waste_deposits_qs = WasteDeposit.objects.all()
+        report.refresh_from_db()
+
+        self.assertEqual(len(waste_deposits_qs), 1)
+        self.assertEqual(report.waste_deposit.lat, waste_deposits_qs.first().lat)
+        self.assertEqual(report.waste_deposit.long, waste_deposits_qs.first().long)
+
+    def test_create_new_waste_deposit(self):
+        report = Report.objects.create(
+            photo=self.PHOTO_PATH, lat=MORE_THEN_IN_FIVE_METERS_COORDINATES.lat,
+            long=MORE_THEN_IN_FIVE_METERS_COORDINATES.long
+        )
+
+        attach_to_waste_deposit(report)
+
+        waste_deposits_qs = WasteDeposit.objects.all()
+        report.refresh_from_db()
+
+        self.assertEqual(len(waste_deposits_qs), 2)
+        self.assertEqual(report.waste_deposit.lat, report.lat)
+        self.assertEqual(report.waste_deposit.long, report.long)

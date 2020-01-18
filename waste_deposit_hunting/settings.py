@@ -212,3 +212,6 @@ LOGGING = {
 LOGGER = logging.getLogger('main')
 
 PHOTO_MAX_HEIGHT = int(os.getenv('PHOTO_MAX_HEIGHT', 1750))
+WASTE_DEPOSIT_DISTANCE_IN_METERS = int(
+    os.getenv('WASTE_DEPOSIT_DISTANCE_IN_METERS', 5)
+)

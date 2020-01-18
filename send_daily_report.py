@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from sentry_sdk import capture_exception, capture_message
 
 from reports.models import Report, State
+from reports.logic import attach_to_waste_deposit
 
 
 def send_daily_report():
@@ -33,6 +34,10 @@ def send_daily_report():
             report for report in unsent_reports.filter(state=state)
             if os.path.isfile(report.photo.path)
         ]
+
+        for to_be_sent_report in to_be_sent_reports:
+            if not to_be_sent_report.waste_deposit:
+                attach_to_waste_deposit(to_be_sent_report.id)
 
         context = {'reports': to_be_sent_reports}
         html_content = render_to_string('email.html', context=context).strip()

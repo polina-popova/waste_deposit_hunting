@@ -1,6 +1,7 @@
 Django==2.1.*
 djangorestframework==3.9.*
 drf-nested-routers==0.91.*
+geopy==1.20.*
 factory-boy==2.12.*
 mysqlclient==1.4.*
 Pillow==6.2.*

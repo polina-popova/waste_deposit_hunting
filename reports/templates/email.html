@@ -790,6 +790,13 @@ img {
             {% if report.feedback_info %}
                 <p><strong>Обратная связь:</strong> {{ report.feedback_info }}</p>
             {% endif %}
+            {% if report.waste_deposit.reports_amount > 1 %}
+                <p>
+                    Об этой свалке уже сообщали.<br>
+                    Количество сообщений - {{ report.waste_deposit.reports_amount }},<br>
+                    последнее - {{ report.waste_deposit.datetime_penult_received.date }}
+                </p>
+            {% endif %}
 
         <p></p></td><td class="expander"></td></tr></tbody></table></td></tr></tbody></table></td></tr><tr><td>
         </td></tr><tr><td><table class="row"><tbody><tr><td class="wrapper"><table class="six columns"><tbody><tr><td><p></p>
