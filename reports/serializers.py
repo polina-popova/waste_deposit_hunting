@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers, status
 
-from .models import Report, WasteDeposit, ContentComplain
+from .models import Report, WasteDeposit, ContentComplain, State
 from .utils import get_location_attrs
 
 
@@ -71,13 +71,19 @@ class CreateReportSerializer(serializers.ModelSerializer):
         self.validate_income_photo(attrs.get('photo'))
 
         state, verbose_address = get_location_attrs(attrs['lat'], attrs['long'])
-        if state != 'Архангельская область':
+
+        possible_state = State.objects.only('state_name').filter(state_name__iexact=state)
+
+        if not possible_state:
             settings.LOGGER.info(f'ERROR: invalid_geo_state {state}')
 
             raise CustomValidationError(
                 detail=settings.INVALID_STATE_ERROR, code='invalid_geo_state'
             )
-        attrs['verbose_address'] = verbose_address
+        attrs.update({
+            'verbose_address': verbose_address,
+            'state': possible_state.first()
+        })
 
         return attrs
 

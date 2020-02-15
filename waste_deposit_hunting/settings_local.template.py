@@ -1,8 +1,16 @@
 import logging
 
 
-INVALID_STATE_ERROR = 'На данным момент приложение работает только на територии ' \
-                      'Архангельской области. Пожалуйста, измените выбор местоположения.'
+# Django settings
+
+SECRET_KEY = ''
+
+LOGGER = logging.getLogger('main')
+
+
+# Errors messages
+
+INVALID_STATE_ERROR = 'К сожалению, на данным момент приложение не работает в вашем регионе.'
 
 NO_PHOTO_ERROR = 'Фотография является обязательной.'
 
@@ -16,14 +24,14 @@ INVALID_LONG_ERROR = 'Невалидная широта.'
 
 NO_COMPLAIN_BODY_ERROR = 'Добавьте текст жалобы.'
 
-EMAIL_HOST_PASSWORD = ''
 
-EMAIL_RECEIVER = []
+# Email setting
+
+EMAIL_HOST_PASSWORD = ''
 
 EMAIL_TITLE = 'Охота на свалку'
 
+
+# Reports settings
+
 PHOTO_MAX_HEIGHT = 1750
-
-SECRET_KEY = ''
-
-LOGGER = logging.getLogger('main')

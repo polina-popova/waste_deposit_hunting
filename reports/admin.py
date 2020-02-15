@@ -1,6 +1,9 @@
-from django.contrib import admin, auth
+import json
 
-from .models import Report, WasteDeposit, ContentComplain
+from django.contrib import admin, auth
+from django import forms
+
+from .models import Report, WasteDeposit, ContentComplain, State
 
 
 @admin.register(Report)
@@ -27,6 +30,28 @@ class WasteDepositAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+
+class StateForm(forms.ModelForm):
+    class Meta:
+        model = State
+        exclude = ('id', )
+
+    def clean(self):
+        emails = self.cleaned_data.get('emails')
+        if emails:
+            emails_list = list(
+                [email.strip() for email in emails.split(',')]
+            )
+            self.cleaned_data['emails'] = json.dumps(emails_list)
+
+        return self.cleaned_data
+
+
+@admin.register(State)
+class StateAdmin(admin.ModelAdmin):
+    form = StateForm
+    list_display = ('state_name', 'emails', 'is_draft')
 
 
 admin.site.register(ContentComplain)

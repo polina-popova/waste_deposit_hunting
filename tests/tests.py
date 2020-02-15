@@ -4,12 +4,14 @@ from unittest import mock
 
 from PIL import Image
 from django.conf import settings
+from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from reports.helpers import get_desired_width
-from reports.models import Report
-
+from reports.models import Report, State
+from send_daily_report import send_daily_report
+from tests.data_factory import ValidReportFactory
 
 Coordinates = namedtuple('Coordinates', ('lat', 'long'))
 VALID_COORDINATES = Coordinates(64.61833411, 40.9587337)  # Coordinates of the point in Arkhangelsk area
@@ -32,8 +34,14 @@ def _get_stub_photo(size):
     return tmp_file
 
 
-class ReportTestCase(APITestCase):
-    @mock.patch('reports.utils.get_location_attrs', return_valid_state)
+class BaseTestCase(APITestCase):
+
+    def tearDown(self) -> None:
+        Report.objects.all().delete()
+
+
+class ReportTestCase(BaseTestCase):
+    @mock.patch('reports.serializers.get_location_attrs', return_valid_state)
     def test_post_report(self):
         tmp_file = _get_stub_photo(size=BIG_SIZE)
 
@@ -54,7 +62,7 @@ class ReportTestCase(APITestCase):
         self.assertEqual(report.photo.height, settings.PHOTO_MAX_HEIGHT)
         self.assertEqual(report.photo.width, resized_width)
 
-    @mock.patch('reports.utils.get_location_attrs', return_invalid_state)
+    @mock.patch('reports.serializers.get_location_attrs', return_invalid_state)
     def test_report_with_invalid_location(self):
         tmp_file = _get_stub_photo(size=DEFAULT_TEST_SIZE)
 
@@ -92,8 +100,8 @@ class ReportTestCase(APITestCase):
         print(report.verbose_address)
 
 
-class ContentComplainTestCase(APITestCase):
-    @mock.patch('reports.utils.get_location_attrs', return_valid_state)
+class ContentComplainTestCase(BaseTestCase):
+    @mock.patch('reports.serializers.get_location_attrs', return_valid_state)
     def test_create_content_complain(self):
         tmp_file = _get_stub_photo(size=DEFAULT_TEST_SIZE)
 
@@ -138,3 +146,24 @@ class ContentComplainTestCase(APITestCase):
             data=data
         )
         self.assertEqual(response.status_code, 404)
+
+
+@mock.patch('send_daily_report.EmailMultiAlternatives')
+class SentDailyReportTestCase(BaseTestCase):
+
+    def test_send_email(self, *args, **kwargs):
+        for _ in range(3):
+            ValidReportFactory()
+
+        send_daily_report()
+        unsent_reports = Report.objects.filter(was_sent=False)
+
+        self.assertEqual(args[0].call_count, 2)
+        self.assertEqual(len(unsent_reports), 1)
+
+        State.objects.filter(emails='').update(emails='["someemail@mail.ru"]')
+        send_daily_report()
+        unsent_reports = Report.objects.filter(was_sent=False)
+
+        self.assertEqual(args[0].call_count, 5)
+        self.assertFalse(unsent_reports)
