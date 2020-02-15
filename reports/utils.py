@@ -9,7 +9,8 @@ def get_location_attrs(latitude, longitude):
     """Get geo state for the provided coordinates. """
 
     response = requests.get(GEO_API_PROVIDER_URL.format(
-        latitude=latitude, longitude=longitude)
+        latitude=latitude, longitude=longitude),
+        headers={'Accept-Language': "ru-Ru"}
     )
     if response.status_code != 200:
         return None

@@ -34,6 +34,20 @@ class WasteDeposit(models.Model):
         ordering = ('pk', )
 
 
+class State(models.Model):
+    state_name = models.CharField(max_length=500, verbose_name='Область')
+    emails = models.CharField(
+        blank=True, null=True, max_length=1500,
+        verbose_name='Адреса почт координаторов'
+    )
+    is_draft = models.BooleanField(default=True, verbose_name='Черновик')
+
+    class Meta:
+        verbose_name = 'Подключенная область'
+        verbose_name_plural = 'Подключенные области'
+        unique_together = [['id', 'state_name']]
+
+
 class Report(models.Model):
     """Model of the report about waste deposit """
 
@@ -53,6 +67,11 @@ class Report(models.Model):
     )
 
     was_sent = models.BooleanField(default=False, verbose_name='Включено в ежедневный отчет')
+
+    state = models.ForeignKey(
+        State, on_delete=models.CASCADE, related_name='reports',
+        verbose_name='Область', default=1
+    )
     verbose_address = models.TextField(blank=True, null=True, verbose_name='Адрес')
 
     @property
