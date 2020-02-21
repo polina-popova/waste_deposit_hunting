@@ -1,8 +1,10 @@
 import json
 
 from django.contrib import admin, auth
+from django.core.validators import EmailValidator
 from django import forms
 
+from .helpers import clean_up_emails
 from .models import Report, WasteDeposit, ContentComplain, State
 
 
@@ -40,9 +42,15 @@ class StateForm(forms.ModelForm):
     def clean(self):
         emails = self.cleaned_data.get('emails')
         if emails:
-            emails_list = list(
-                [email.strip() for email in emails.split(',')]
-            )
+            emails_list = []
+            validator = EmailValidator()
+
+            for email in clean_up_emails(emails).split(','):
+                stripped_email = email.strip()
+
+                validator(stripped_email)
+                emails_list.append(stripped_email)
+
             self.cleaned_data['emails'] = json.dumps(emails_list)
 
         return self.cleaned_data
