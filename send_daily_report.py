@@ -47,8 +47,9 @@ def send_daily_report():
 
         for to_be_sent_report in to_be_sent_reports:
             # Create an inline attachment
+            subtype = to_be_sent_report.photo.url.split('.')[-1]
             try:
-                image = MIMEImage(to_be_sent_report.photo.read())
+                image = MIMEImage(to_be_sent_report.photo.read(), _subtype=subtype)
             except FileNotFoundError:
                 continue
             image.add_header('Content-ID', '<{}>'.format(to_be_sent_report.image_filename))
