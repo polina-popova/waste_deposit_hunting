@@ -10,6 +10,7 @@ django.setup()
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from sentry_sdk import capture_exception, capture_message
 
 from reports.models import Report, State
 
@@ -22,8 +23,9 @@ def send_daily_report():
         try:
             recipients_list = json.loads(state.emails)
         except (json.decoder.JSONDecodeError, TypeError):
-            settings.LOGGER.warning(
-                f'Invalid emails in state {state.state_name}: go ahead ...'
+            capture_message(
+                f'Invalid or empty emails in state {state.state_name} ...',
+                level='warning'
             )
             continue
 
@@ -50,15 +52,18 @@ def send_daily_report():
             subtype = to_be_sent_report.photo.url.split('.')[-1]
             try:
                 image = MIMEImage(to_be_sent_report.photo.read(), _subtype=subtype)
-            except FileNotFoundError:
-                continue
-            image.add_header('Content-ID', '<{}>'.format(to_be_sent_report.image_filename))
-            msg.attach(image)
+            except FileNotFoundError as error:
+                capture_exception(error)
+            else:
+                image.add_header(
+                    'Content-ID', '<{}>'.format(to_be_sent_report.image_filename)
+                )
+                msg.attach(image)
 
         try:
             msg.send()
-        except Exception:
-            settings.LOGGER.error(sys.gettrace())
+        except Exception as error:
+            capture_exception(error)
         else:
             unsent_reports\
                 .filter(pk__in=tuple(map(lambda x: x.pk, to_be_sent_reports)))\

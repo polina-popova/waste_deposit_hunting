@@ -5,6 +5,7 @@ from django.http import Http404
 from rest_framework.response import Response
 from rest_framework.views import set_rollback
 from rest_framework import exceptions
+from sentry_sdk import capture_message
 
 from reports.serializers import CustomValidationError
 
@@ -41,8 +42,12 @@ def custom_exception_handler(exc, context):
             data = {'msg': exc.detail, 'code': code}
 
         set_rollback()
-        settings.LOGGER.info(f'ERROR: some {exc.status_code} error: {data}')
+        capture_message(f'ERROR: some {exc.status_code} error: {data}', level='warning')
 
         return Response(data, status=exc.status_code, headers=headers)
 
+    capture_message(
+        f'ERROR: some unexpected {exc.status_code} error: {context}',
+        level='warning'
+    )
     return None
