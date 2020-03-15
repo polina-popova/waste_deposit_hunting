@@ -78,6 +78,7 @@ class ReportTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 400)
 
+    @mock.patch('reports.serializers.get_location_attrs', return_valid_state)
     def test_report_with_address(self):
         tmp_file = _get_stub_photo(size=DEFAULT_TEST_SIZE)
 
@@ -97,7 +98,6 @@ class ReportTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertTrue(report.verbose_address)
-        print(report.verbose_address)
 
 
 class ContentComplainTestCase(BaseTestCase):
@@ -129,7 +129,6 @@ class ContentComplainTestCase(BaseTestCase):
                 ),
             data=data
         )
-        print(response.json())
         self.assertEqual(response.status_code, 201)
 
     @mock.patch('reports.utils.get_location_attrs', return_valid_state)

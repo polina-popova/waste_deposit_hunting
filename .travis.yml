@@ -1,0 +1,27 @@
+language: python
+
+python:
+  - 3.6
+
+git:
+  depth: 1
+
+services:
+  - mysql
+
+env:
+  global:
+    - EMAIL_HOST_USER=some-email@mail.com
+    - EMAIL_HOST_PASSWORD=pass
+    - SECRET_KEY=some-secret-key
+    - DB_NAME=test
+    - DB_USER=travis
+    - DB_PASSWORD=''
+    - DB_HOST=localhost
+    - DB_PORT=3306
+
+install:
+  - pip install -qr requirements.txt
+
+script:
+  - ./manage.py test ./tests
