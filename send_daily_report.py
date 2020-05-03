@@ -37,7 +37,7 @@ def send_daily_report():
 
         for to_be_sent_report in to_be_sent_reports:
             if not to_be_sent_report.waste_deposit:
-                attach_to_waste_deposit(to_be_sent_report.id)
+                attach_to_waste_deposit(to_be_sent_report)
 
         context = {'reports': to_be_sent_reports}
         html_content = render_to_string('email.html', context=context).strip()

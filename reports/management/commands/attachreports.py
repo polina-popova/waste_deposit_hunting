@@ -27,4 +27,4 @@ class Command(BaseCommand):
             return self.stdout.write('No reports to be attached.')
 
         for report in reports:
-            attach_to_waste_deposit(report.id)
+            attach_to_waste_deposit(report)
